@@ -1,0 +1,55 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+local_settings.py
+media/
+staticfiles/
+
+# Virtual Environments #
+venv/
+env/
+.venv/
+ENV/
+.env
+*.env
+
+
+# IDE / Editor #
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files #
+.DS_Store
+Thumbs.db
+
+# Python #
+*.py[cod]
+*$py.class
+*.pyo
+
+# Test / Coverage #
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Build / Packaging #
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Migrations (optional – uncomment if you don’t want to track migrations) #
+# **/migrations/
+# !**/migrations/__init__.py
+
+# Node (if using npm/yarn for frontend) #
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
