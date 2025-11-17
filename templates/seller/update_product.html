@@ -1,0 +1,62 @@
+{% extends 'seller/base.html' %}
+
+{% block title %}Edit Product{% endblock %}
+{% block page_title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Edit Product: {{ product.name }}</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {{ form.name.errors }}
+    </div>
+
+    <div>
+        {{ form.description.label_tag }}
+        {{ form.description }}
+        {{ form.description.errors }}
+    </div>
+
+    <div>
+        {{ form.price.label_tag }}
+        {{ form.price }}
+        {{ form.price.errors }}
+    </div>
+
+    <div>
+        {{ form.stock.label_tag }}
+        {{ form.stock }}
+        {{ form.stock.errors }}
+    </div>
+
+    <!-- Existing Images -->
+    {% if existing_images %}
+    <div class="mb-4">
+        <label class="block font-semibold mb-2">Existing Images:</label>
+        <div class="flex gap-2">
+            {% for img in existing_images %}
+            <div class="relative">
+                <img src="{{ img.image_file.url }}"  width="300" height="300" class="border rounded">
+                <a href="{% url 'delete_product_image' img.id %}" class="absolute top-0 right-0 bg-red-500 text-white px-1 rounded">delete</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Add New Images -->
+    <label>Add New Images:</label>
+    <input type="file" name="images" multiple>
+
+    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+        Update Product
+    </button>
+</form>
+</div>
+{% endblock %}

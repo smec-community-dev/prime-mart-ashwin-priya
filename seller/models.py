@@ -41,7 +41,7 @@ class Product(models.Model):
 # -----------------------------
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image_url = models.URLField(max_length=500)
+    image_file=models.ImageField(upload_to='products/',null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def _str_(self):

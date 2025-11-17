@@ -1,0 +1,51 @@
+{% extends 'seller/base.html' %}
+
+{% block title %}Add Product{% endblock %}
+{% block page_title %}Add Product{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Add New Product</h2>
+
+    <!-- ADD enctype -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div>
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+
+        <div>
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <div>
+            {{ form.price.label_tag }}
+            {{ form.price }}
+            {{ form.price.errors }}
+        </div>
+
+        <div>
+            {{ form.stock.label_tag }}
+            {{ form.stock }}
+            {{ form.stock.errors }}
+        </div>
+
+
+        <div>
+            <label class="font-semibold">Product Images</label>
+            <input type="file" name="images" multiple class="w-full border p-2 rounded">
+            <p class="text-sm text-gray-500 mt-1">You can upload multiple images</p>
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            Add Product
+        </button>
+    </form>
+</div>
+{% endblock %}
