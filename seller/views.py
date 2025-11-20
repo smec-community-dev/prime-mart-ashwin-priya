@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from .forms import *
 from .models import *
+from customer.models import*
 
 def seller_register(request):
     if request.method == 'POST':
@@ -86,12 +87,24 @@ def seller_logout(request):
 def view_products(request):
     if request.user.role != "seller":
         return redirect("seller_login")
-    search = request.GET.get('search') 
+
+    search = request.GET.get('search')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
     products = Product.objects.filter(seller__user=request.user)
     if search:
         products = products.filter(name__icontains=search)
+    if min_price:
+        products = products.filter(price__gte=float(min_price))
+    if max_price:
+        products = products.filter(price__lte=float(max_price))
+    content = {
+        "products": products,
+        "search": search,
+        "min_price": min_price,
+        "max_price": max_price
+    }
 
-    content = {"products": products, "search": search}
     return render(request, "seller/products.html", content)
 
 
@@ -158,3 +171,36 @@ def delete_product_image(request, pk):
     product_id = img.product.id
     img.delete()
     return redirect('update_product', pk=product_id)
+
+@login_required
+def view_orders(request):
+    if request.user.role != "seller":
+        return redirect("seller_login")
+    seller = request.user.seller  
+    orders = (Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date'))
+    if request.method == "POST":
+        order_id = request.POST.get("order_id")
+        order = get_object_or_404(Order, id=order_id)
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('view_orders') 
+    return render(request, 'seller/view_orders.html', {'orders': orders})  
+
+
+
+@login_required
+def product_details(request, pk):
+    if request.user.role != 'seller':
+        return redirect('seller_login')
+
+    # Get the product
+    product = get_object_or_404(Product, pk=pk)
+
+    # Get all reviews for this product using related_name
+    reviews = product.reviews.all()
+
+    return render(request, 'seller/product_details.html', {
+        'product': product,
+        'reviews': reviews
+    })
