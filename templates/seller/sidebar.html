@@ -1,0 +1,73 @@
+<!-- SIDEBAR -->
+<aside id="sidebar" class="sidebar">
+    <div class="brand">
+        <img src="https://via.placeholder.com/36" alt="logo">
+        <div>
+            <div style="font-size:12px;color:var(--muted)"></div>
+            <h1 style="font-size:16px;margin-top:2px">Prime Mart</h1>
+        </div>
+    </div>
+    <div class="nav-section">Home</div>
+    <ul class="nav">
+        <li class="active">
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.6 0 1-.4 1-1s-.4-1-1-1h-1V4c0-1.1-.9-2-2-2H6C4.9 2 4 2.9 4 4v7H3c-.6 0-1 .4-1 1s.4 1 1 1zM6 4h12v7H6V4z"/>
+                </svg>
+            </i> 
+            <a href="{% url 'seller_dashboard' %}" class="block text-gray-700 hover:bg-blue-100 px-4 py-2 rounded-lg">Dashboard</a>
+        </li>
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 11H5c-.6 0-1 .4-1 1s.4 1 1 1h14c.6 0 1-.4 1-1s-.4-1-1-1zm0-6H5c-.6 0-1 .4-1 1s.4 1 1 1h14c.6 0 1-.4 1-1s-.4-1-1-1zM5 15h14c.6 0 1 .4 1 1s-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1z"/>
+                </svg>
+            </i> 
+            <a href="{% url 'products' %}" class="block text-gray-700 hover:bg-blue-100 px-4 py-2 rounded-lg">View Products</a>
+        </li>
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+            </i> 
+            <a href="{% url 'view_orders' %}" class="block text-gray-700 hover:bg-blue-100 px-4 py-2 rounded-lg">Manage Orders</a>
+        </li>
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                    <path d="M7 7h10v4H7zM7 13h10v4H7z"/>
+                </svg>
+            </i> 
+            Card
+        </li>
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                </svg>
+            </i> 
+            Forms
+        </li>
+    </ul>
+    <div class="nav-section" style="margin-top:20px">Auth</div>
+    <ul class="nav">
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+            </i> 
+            Login
+        </li>
+        <li>
+            <i>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </i> 
+            Register
+        </li>
+    </ul>
+</aside>

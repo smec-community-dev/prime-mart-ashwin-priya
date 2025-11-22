@@ -3,9 +3,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required  
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.db.models import Avg,Sum
 from .forms import *
 from .models import *
 from customer.models import*
+
 
 def seller_register(request):
     if request.method == 'POST':
@@ -88,21 +90,33 @@ def view_products(request):
     if request.user.role != "seller":
         return redirect("seller_login")
 
+    seller = request.user.seller
+    products = Product.objects.filter(seller=seller)
+
     search = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
-    products = Product.objects.filter(seller__user=request.user)
+
     if search:
         products = products.filter(name__icontains=search)
     if min_price:
         products = products.filter(price__gte=float(min_price))
     if max_price:
         products = products.filter(price__lte=float(max_price))
+
+    # ----- Calculate stats for cards -----
+    low_stock_count = products.filter(stock__lte=5, stock__gt=0).count()
+    out_of_stock_count = products.filter(stock=0).count()
+    total_value = sum([p.stock * p.price for p in products])
+
     content = {
         "products": products,
         "search": search,
         "min_price": min_price,
-        "max_price": max_price
+        "max_price": max_price,
+        "low_stock_count": low_stock_count,
+        "out_of_stock_count": out_of_stock_count,
+        "total_value": total_value,
     }
 
     return render(request, "seller/products.html", content)
@@ -185,22 +199,40 @@ def view_orders(request):
         if form.is_valid():
             form.save()
             return redirect('view_orders') 
-    return render(request, 'seller/view_orders.html', {'orders': orders})  
+        
+    total_orders = orders.count()
+    completed_orders = orders.filter(status='delivered').count()  # replace with your actual status key
+    pending_orders = orders.exclude(status='delivered').count()
+    total_revenue = orders.aggregate(total=Sum('total_amount'))['total'] or 0
 
+    context = {
+        'orders': orders,
+        'total_orders': total_orders,
+        'completed_orders': completed_orders,
+        'pending_orders': pending_orders,
+        'total_revenue': total_revenue,
+    }
 
+    return render(request, 'seller/view_orders.html', context) 
 
 @login_required
 def product_details(request, pk):
     if request.user.role != 'seller':
         return redirect('seller_login')
 
-    # Get the product
-    product = get_object_or_404(Product, pk=pk)
+    # Get product only if it belongs to the logged-in seller
+    product = get_object_or_404(Product, id=pk, seller=request.user.seller)
 
-    # Get all reviews for this product using related_name
+    # Get all reviews for this product
     reviews = product.reviews.all()
 
-    return render(request, 'seller/product_details.html', {
+    # Calculate average rating
+    average_rating = reviews.aggregate(Avg('rating_value'))['rating_value__avg'] if reviews.exists() else None
+
+    context = {
         'product': product,
-        'reviews': reviews
-    })
+        'reviews': reviews,
+        'average_rating': average_rating,
+    }
+
+    return render(request, 'seller/product_details.html', context)

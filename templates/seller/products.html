@@ -1,73 +1,684 @@
 {% extends 'seller/base.html' %}
 
-{% block title %}View Products{% endblock %}
-{% block page_title %}View Products{% endblock %}
+{% block title %}Products Dashboard - Modernize{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold">Your Products</h2>
-    <a href="{% url 'add_product' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-        + Add Product
-    </a>
+
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="page-title">Your Products</h1>
+                <p class="page-subtitle">Manage your product inventory and listings</p>
+            </div>
+            <a href="{% url 'add_product' %}" class="add-product-btn">
+                <span class="btn-icon">+</span>
+                Add New Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-label">Total Products</p>
+                    <p class="stat-value">{{ products|length }}</p>
+                </div>
+                <div class="stat-icon-box blue">
+                    <svg class="stat-icon" viewBox="0 0 24 24">
+                        <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-label">Low Stock</p>
+                    <p class="stat-value yellow">{{ low_stock_count }}</p>
+                </div>
+                <div class="stat-icon-box yellow">
+                    <svg class="stat-icon" viewBox="0 0 24 24">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-label">Out of Stock</p>
+                    <p class="stat-value red">{{ out_of_stock_count }}</p>
+                </div>
+                <div class="stat-icon-box red">
+                    <svg class="stat-icon" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-label">Total Value</p>
+                    <p class="stat-value green">₹{{ total_value }}</p>
+                </div>
+                <div class="stat-icon-box green">
+                    <svg class="stat-icon" viewBox="0 0 24 24">
+                        <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <!-- Products Table -->
+<div class="products-table-container">
+    <div class="table-header">
+        <div class="header-controls">
+            <h2 class="table-title">Product Inventory</h2>
+            <div class="table-filters">
+                <form method="GET">
+                    <input type="text" name="search" placeholder="Search products..." class="search-input"
+                           value="{{ request.GET.search }}">
+                    <input type="number" name="min_price" placeholder="Min Price" class="price-input"
+                           value="{{ request.GET.min_price }}">
+                    <input type="number" name="max_price" placeholder="Max Price" class="price-input"
+                           value="{{ request.GET.max_price }}">
+                    <button type="submit" class="filter-btn">Filter</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="mb-6">
-<form method="GET" action="{% url 'products' %}" class="flex gap-2 mb-4">
-    <input type="text" name="search" placeholder="Search your products..." value="{{ search|default:'' }}" class="border p-2 rounded w-1/4">
-    <input type="number" name="min_price" placeholder="Min Price" value="{{ min_price|default:'' }}" class="border p-2 rounded w-1/6">
-    <input type="number" name="max_price" placeholder="Max Price" value="{{ max_price|default:'' }}" class="border p-2 rounded w-1/6">
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Filter</button>
-</form>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-    {% if products %}
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border rounded-lg">
+        {% if products %}
+        <div class="table-wrapper">
+            <table class="products-table">
                 <thead>
-                    <tr class="bg-gray-200 text-gray-700">
-                        <th class="py-2 px-4 text-left">#</th>
-                        <th class="py-2 px-4 text-left">Images</th>
-                        <th class="py-2 px-4 text-left">Name</th>
-                        <th class="py-2 px-4 text-left">Description</th>
-                        <th class="py-2 px-4 text-left">Price</th>
-                        <th class="py-2 px-4 text-left">Stock</th>
-                        <th class="py-2 px-4 text-left">Actions</th>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for product in products %}
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="py-2 px-4">{{ forloop.counter }}</td>
+                    <tr class="product-row" onclick="toggleGallery('{{ product.id }}')">
+                        <td>
+                            <div class="product-info">
+                                <div class="product-image">
+                                    {% if product.images.all %}
+                                    <img src="{{ product.images.first.image_file.url }}" 
+                                         alt="{{ product.name }}"
+                                         class="product-thumb">
+                                    {% else %}
+                                    <div class="no-image-placeholder">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-name">{{ product.name }}</div>
 
-                        <!-- IMAGES COLUMN -->
-                        <td class="py-2 px-4">
-                            <div class="flex gap-2">
-                                {% for img in product.images.all %}
-                                    <img src="{{ img.image_file.url }}" class="w-12 h-12 object-cover rounded border">
-                                {% empty %}
-                                    <span class="text-gray-500 text-sm">No images</span>
-                                {% endfor %}
+                                </div>
                             </div>
                         </td>
-
-                        <td class="py-2 px-4">{{ product.name }}</td>
-                        <td class="py-2 px-4">{{ product.description|default:"-" }}</td>
-                        <td class="py-2 px-4">₹{{ product.price }}</td>
-                        <td class="py-2 px-4">{{ product.stock }}</td>
-
-                        <td class="py-2 px-4 space-x-2">
-                            <a href="{% url 'product_details' product.id %}" class="text-blue-600 hover:underline">view details</a>
-                            <a href="{% url 'update_product' product.id %}" class="text-blue-600 hover:underline">Edit</a>
-                            <a href="{% url 'delete_product' product.id %}" class="text-red-600 hover:underline">Delete</a>
+                        
+                        <td>
+                            <div class="product-description">{{ product.description|default:"No description"|truncatewords:10 }}</div>
+                        </td>
+                        
+                        <td>
+                            <div class="product-price">₹{{ product.price }}</div>
+                        </td>
+                        
+                        <td>
+                            <div class="product-stock">{{ product.stock }}</div>
+                        </td>
+                        
+                        <td>
+                            {% if product.stock == 0 %}
+                            <span class="status-badge out-of-stock">Out of Stock</span>
+                            {% elif product.stock <= 5 %}
+                            <span class="status-badge low-stock">Low Stock</span>
+                            {% else %}
+                            <span class="status-badge in-stock">In Stock</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'product_details' product.id %}" class="action-btn view-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    View
+                                </a>
+                                <a href="{% url 'update_product' product.id %}" class="action-btn edit-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_product' product.id %}" class="action-btn delete-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Image Gallery Row -->
+                    <tr class="gallery-row" id="gallery-{{ product.id }}">
+                        <td colspan="6">
+                            <div class="gallery-container">
+                                <h4 class="gallery-title">Product Images</h4>
+                                <div class="image-gallery">
+                                    {% for img in product.images.all %}
+                                    <img src="{{ img.image_file.url }}" 
+                                         alt="{{ product.name }}"
+                                         class="gallery-image">
+                                    {% empty %}
+                                    <div class="no-images-message">
+                                        <span>No images available</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-    {% else %}
-        <p class="text-gray-600">No products added yet.</p>
-    {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24">
+                <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <h3 class="empty-title">No products yet</h3>
+            <p class="empty-message">Get started by adding your first product.</p>
+            <a href="{% url 'add_product' %}" class="empty-action-btn">
+                <span class="btn-icon">+</span>
+                Add Your First Product
+            </a>
+        </div>
+        {% endif %}
+    </div>
 </div>
+
+<style>
+/* Custom CSS that should work with any framework */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.page-subtitle {
+    color: #6b7280;
+    margin: 0;
+    font-size: 16px;
+}
+
+.add-product-btn {
+    background: #3b82f6;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.add-product-btn:hover {
+    background: #2563eb;
+}
+
+.btn-icon {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.stat-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f2937;
+    margin: 0;
+}
+
+.stat-value.yellow { color: #d97706; }
+.stat-value.red { color: #dc2626; }
+.stat-value.green { color: #059669; }
+
+.stat-icon-box {
+    padding: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon-box.blue { background: #dbeafe; }
+.stat-icon-box.yellow { background: #fef3c7; }
+.stat-icon-box.red { background: #fee2e2; }
+.stat-icon-box.green { background: #d1fae5; }
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.stat-icon-box.blue .stat-icon { color: #3b82f6; }
+.stat-icon-box.yellow .stat-icon { color: #d97706; }
+.stat-icon-box.red .stat-icon { color: #dc2626; }
+.stat-icon-box.green .stat-icon { color: #059669; }
+
+.products-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.table-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.table-filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-input, .filter-select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.search-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.products-table th {
+    background: #f9fafb;
+    padding: 16px 24px;
+    text-align: left;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.products-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.product-row {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.product-row:hover {
+    background: #f9fafb;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.product-image {
+    flex-shrink: 0;
+}
+
+.product-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.no-image-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+}
+
+.no-image-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.product-sku {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.product-description {
+    color: #6b7280;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-price {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.product-stock {
+    color: #1f2937;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.in-stock {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.low-stock {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.out-of-stock {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 0;
+    transition: color 0.2s;
+}
+
+.action-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.view-btn { color: #3b82f6; }
+.view-btn:hover { color: #1d4ed8; }
+
+.edit-btn { color: #d97706; }
+.edit-btn:hover { color: #b45309; }
+
+.delete-btn { color: #dc2626; }
+.delete-btn:hover { color: #b91c1c; }
+
+.gallery-row {
+    display: none;
+    background: #f9fafb;
+}
+
+.gallery-row.show {
+    display: table-row;
+}
+
+.gallery-container {
+    border-left: 4px solid #3b82f6;
+    padding-left: 20px;
+}
+
+.gallery-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 16px;
+}
+
+.image-gallery {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.gallery-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.no-images-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    width: 64px;
+    height: 64px;
+    color: #9ca3af;
+    margin: 0 auto 20px;
+    display: block;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.empty-message {
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+.empty-action-btn {
+    background: #3b82f6;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.empty-action-btn:hover {
+    background: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 16px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .table-filters {
+        width: 100%;
+    }
+    
+    .search-input, .filter-select {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .products-table th,
+    .products-table td {
+        padding: 12px 16px;
+    }
+}
+</style>
+
+<script>
+function toggleGallery(productId) {
+    const galleryRow = document.getElementById('gallery-' + productId);
+    if (galleryRow) {
+        galleryRow.classList.toggle('show');
+    }
+}
+
+// Prevent gallery toggle when clicking action buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+});
+</script>
 {% endblock %}
