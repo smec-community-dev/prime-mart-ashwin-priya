@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Account - Prime Mart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            min-height: 600px;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-panel {
+            flex: 1.2;
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .welcome-text h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-text p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .features {
+            margin-top: 40px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .feature i {
+            font-size: 20px;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #666;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .form-section h3 {
+            color: #444;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e1e5eb;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h3 i {
+            margin-right: 10px;
+            color: #6a11cb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6a11cb;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+        }
+
+        .errorlist {
+            color: #e74c3c;
+            list-style: none;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .errorlist li {
+            display: flex;
+            align-items: center;
+        }
+
+        .errorlist li:before {
+            content: "⚠";
+            margin-right: 5px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #8840d5 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-submit i {
+            margin-right: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-bar:before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e1e5eb;
+            z-index: 1;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #e1e5eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #777;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .progress-step.active .step-icon {
+            background: #843ed0;
+            color: white;
+        }
+
+        .progress-step.active .step-label {
+            color: #6a11cb;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .left-panel {
+                padding: 30px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .right-panel {
+                padding: 25px;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Left Panel with Branding -->
+    <div class="left-panel">
+        <div class="logo">
+            <i class="fas fa-store"></i>
+            <h1>Prime Mart</h1>
+        </div>
+        
+        <div class="welcome-text">
+            <h2>Join Our Community</h2>
+            <p>Create your account to unlock exclusive features, personalized recommendations, and faster checkout.</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-shipping-fast"></i>
+                <div>
+                    <h4>Fast Delivery</h4>
+                    <p>Get your orders delivered quickly</p>
+                </div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <h4>Secure Payments</h4>
+                    <p>Your data is always protected</p>
+                </div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-percentage"></i>
+                <div>
+                    <h4>Exclusive Deals</h4>
+                    <p>Special offers for members only</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Panel with Registration Form -->
+    <div class="right-panel">
+        <div class="form-header">
+            <h2>Create Your Account</h2>
+            <p>Fill in your details to get started</p>
+        </div>
+    
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-container">
+                <!-- Account Details Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-user-circle"></i> Account Details</h3>
+                    
+                    <div class="form-grid">
+                        {% for field in user_form %}
+                            <div class="form-group {% if field.name == 'email' %}full-width{% endif %}">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div class="input-with-icon">
+                                    {% if field.name == 'username' %}
+                                        <i class="fas fa-user"></i>
+                                    {% elif field.name == 'email' %}
+                                        <i class="fas fa-envelope"></i>
+                                    {% elif 'password' in field.name %}
+                                        <i class="fas fa-lock"></i>
+                                        <button type="button" class="password-toggle">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    {% endif %}
+                                    {{ field }}
+                                </div>
+                                {{ field.errors }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Profile Details Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-address-card"></i> Profile Details</h3>
+                    
+                    <div class="form-grid">
+                        {% for field in profile_form %}
+                            <div class="form-group {% if field.name == 'address' %}full-width{% endif %}">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div class="input-with-icon">
+                                    {% if field.name == 'phone' %}
+                                        <i class="fas fa-phone"></i>
+                                    {% elif field.name == 'address' %}
+                                        <i class="fas fa-home"></i>
+                                    {% endif %}
+                                    {{ field }}
+                                </div>
+                                {{ field.errors }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </div>
+        </form>
+        
+        <div class="login-link">
+            <p>Already have an account? <a href="{% url 'user_login' %}">Sign In</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password visibility toggle
+    document.querySelectorAll('.password-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Form validation and progress indication
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Check required fields
+        document.querySelectorAll('input[required]').forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                input.style.borderColor = '#e74c3c';
+            } else {
+                input.style.borderColor = '#e1e5eb';
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+
+    // Add focus effects
+    document.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('focus', function() {
+            this.parentElement.style.boxShadow = '0 0 0 3px rgba(106, 17, 203, 0.1)';
+        });
+        
+        field.addEventListener('blur', function() {
+            this.parentElement.style.boxShadow = 'none';
+        });
+    });
+</script>
+
+</body>
+</html>

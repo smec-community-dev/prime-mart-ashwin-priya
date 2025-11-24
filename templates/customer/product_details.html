@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Product Details</title>
+
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-header {
+            display: flex;
+            gap: 30px;
+        }
+
+        .product-header img {
+            width: 350px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .product-info h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            margin: 10px 0;
+            color: #6b7280;
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #1f2937;
+        }
+
+        .btn-cart {
+            display: inline-block;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-cart:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="product-header">
+
+        {% if product.images.all %}
+            <img src="{{ product.images.all.0.image_file.url }}" alt="{{ product.name }}">
+        {% else %}
+            <img src="https://via.placeholder.com/350x350?text=No+Image">
+        {% endif %}
+
+        <div class="product-info">
+            <h2>{{ product.name }}</h2>
+
+            <p>{{ product.description }}</p>
+
+            <p class="price">₹{{ product.price }}</p>
+
+            <!-- Updated Add to Cart Button -->
+            <a href="{% url 'add_to_cart' product.id %}" class="btn-cart">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
