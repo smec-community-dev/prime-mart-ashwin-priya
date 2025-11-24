@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required  
 from django.contrib.auth import logout
 from django.contrib import messages
-from django.db.models import Avg,Sum
+from django.db.models import Avg,Sum,Q
 from .forms import *
 from .models import *
 from customer.models import*
@@ -26,12 +26,7 @@ def seller_register(request):
             profile = profile_form.save(commit=False)
             profile.user = user
             profile.save()
-            
-            messages.success(request, "Seller registered successfully!")
-            return redirect('seller_login')  
-
-        else:
-            messages.error(request, "Please correct the errors below.")
+            return redirect("seller_login")
 
     else:
         user_form = SellerUserForm()
@@ -77,7 +72,12 @@ def seller_login(request):
 def seller_dashboard(request):
     if request.user.role != "seller":
         return redirect("seller_login")
-    return render(request, "seller/dashboard.html", {"seller": request.user})
+    seller = request.user.seller  
+    orders = (Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date'))
+    products = Product.objects.filter(seller=seller)
+    pending_orders = orders.exclude(status='delivered').count()
+    total_revenue = orders.aggregate(total=Sum('total_amount'))['total'] or 0
+    return render(request, "seller/dashboard.html", {"seller": request.user,'total_revenue':total_revenue,'products':products,'pending_orders':pending_orders})
 
 
 def seller_logout(request):
@@ -97,14 +97,16 @@ def view_products(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
+
     if search:
-        products = products.filter(name__icontains=search)
+        products = products.filter(
+            Q(name__icontains=search) | Q(description__icontains=search)
+        )
     if min_price:
         products = products.filter(price__gte=float(min_price))
     if max_price:
         products = products.filter(price__lte=float(max_price))
 
-    # ----- Calculate stats for cards -----
     low_stock_count = products.filter(stock__lte=5, stock__gt=0).count()
     out_of_stock_count = products.filter(stock=0).count()
     total_value = sum([p.stock * p.price for p in products])
@@ -148,6 +150,9 @@ def add_product(request):
 
 @login_required
 def update_product(request, pk):
+    if request.user.role != "seller":
+        return redirect("seller_login")    
+    
     product = get_object_or_404(Product, pk=pk)
     
     if request.method == "POST":
@@ -219,14 +224,8 @@ def view_orders(request):
 def product_details(request, pk):
     if request.user.role != 'seller':
         return redirect('seller_login')
-
-    # Get product only if it belongs to the logged-in seller
-    product = get_object_or_404(Product, id=pk, seller=request.user.seller)
-
-    # Get all reviews for this product
+    product = get_object_or_404(Product, pk=pk, seller=request.user.seller)
     reviews = product.reviews.all()
-
-    # Calculate average rating
     average_rating = reviews.aggregate(Avg('rating_value'))['rating_value__avg'] if reviews.exists() else None
 
     context = {
@@ -236,3 +235,41 @@ def product_details(request, pk):
     }
 
     return render(request, 'seller/product_details.html', context)
+
+@login_required
+def manage_profile(request):
+    if request.user.role != "seller":
+        return redirect("seller_login")
+    seller = Seller.objects.get(user=request.user) 
+    
+    products = Product.objects.filter(seller=seller)
+    orders = (Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date'))
+
+    context = {
+            "seller": seller,
+            "products": products,
+            "orders": orders,
+        }
+
+    return render(request, "seller/manage_profile.html", context)
+
+@login_required
+def edit_profile(request):
+    if request.user.role != "seller":
+        return redirect("seller_login")
+
+    seller = Seller.objects.get(user=request.user)
+
+    if request.method == "POST":
+        seller.name = request.POST.get("name")
+        seller.address = request.POST.get("address")
+        seller.phone = request.POST.get("phone")
+        seller.save()
+
+        user = request.user
+        user.email = request.POST.get("email")
+        user.save()
+
+        return redirect("manage_profile")
+
+    return render(request, "seller/edit_profile.html", {"seller": seller})

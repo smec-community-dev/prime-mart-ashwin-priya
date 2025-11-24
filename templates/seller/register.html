@@ -4,63 +4,407 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Registration</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-
-    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Seller Registration</h1>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --error: #ef4444;
+            --success: #10b981;
+        }
         
-        <form method="POST" action="{% url 'seller_register' %}" class="space-y-6">
-            {% csrf_token %}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), #8b5cf6);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: var(--text);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .logo p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 20px;
+            background-color: var(--primary);
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .password-toggle:hover {
+            color: var(--text);
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 6px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .card {
+                padding: 30px 20px;
+            }
             
-            <!-- Account Info -->
-            <div>
-                <h2 class="text-xl font-semibold text-gray-700 mb-3">Account Info</h2>
+            .logo h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* Animation for form sections */
+        .form-section {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Error states */
+        .error {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input.error-field, textarea.error-field {
+            border-color: var(--error);
+        }
+        
+        /* Success state */
+        .success {
+            color: var(--success);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <h1>Seller Registration</h1>
+                <p>Create your seller account in minutes</p>
+            </div>
+            
+            <form method="POST" action="{% url 'seller_register' %}">
+                {% csrf_token %}
                 
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_username">Username</label>
-                    <input type="text" name="username" id="id_username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <!-- Account Info -->
+                <div class="form-section">
+                    <h2 class="section-title">Account Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <div class="input-container">
+                            <input type="text" name="username" id="id_username" required>
+                        </div>
+                        <div class="error" id="username-error">Username is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_email">Email Address</label>
+                        <div class="input-container">
+                            <input type="email" name="email" id="id_email" required>
+                        </div>
+                        <div class="error" id="email-error">Please enter a valid email address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_password1">Password</label>
+                        <div class="input-container">
+                            <input type="password" name="password1" id="id_password1" required>
+                            <button type="button" class="password-toggle" id="togglePassword1">Show</button>
+                        </div>
+                        <div class="help-text">
+                            Must be at least 8 characters, not too common, and not entirely numeric.
+                        </div>
+                        <div class="error" id="password1-error">Password does not meet requirements</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_password2">Confirm Password</label>
+                        <div class="input-container">
+                            <input type="password" name="password2" id="id_password2" required>
+                            <button type="button" class="password-toggle" id="togglePassword2">Show</button>
+                        </div>
+                        <div class="error" id="password2-error">Passwords do not match</div>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_email">Email</label>
-                    <input type="email" name="email" id="id_email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <!-- Seller Info -->
+                <div class="form-section">
+                    <h2 class="section-title">Seller Information</h2>
+
+                    <div class="form-group">
+                        <label for="id_name">Full Name</label>
+                        <div class="input-container">
+                            <input type="text" name="name" id="id_name" required>
+                        </div>
+                        <div class="error" id="name-error">Name is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_address">Business Address</label>
+                        <div class="input-container">
+                            <textarea name="address" id="id_address" rows="3" required></textarea>
+                        </div>
+                        <div class="error" id="address-error">Address is required</div>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_password1">Password</label>
-                    <input type="password" name="password1" id="id_password1" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Must be at least 8 characters, not too common, and not entirely numeric.
-                    </p>
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">Create Seller Account</button>
+                
+                <div class="login-link">
+                    Already have an account? <a href="{% url 'seller_login' %}">Sign in here</a>
                 </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_password2">Confirm Password</label>
-                    <input type="password" name="password2" id="id_password2" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-            </div>
-
-            <!-- Seller Info -->
-            <div>
-                <h2 class="text-xl font-semibold text-gray-700 mb-3">Seller Info</h2>
-
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_name">Name</label>
-                    <input type="text" name="name" id="id_name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-600 mb-1" for="id_address">Address</label>
-                    <textarea name="address" id="id_address" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Register</button>
-        </form>
+            </form>
+        </div>
     </div>
 
+    <script>
+        // Password toggle functionality
+        document.getElementById('togglePassword1').addEventListener('click', function() {
+            const passwordInput = document.getElementById('id_password1');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+        
+        document.getElementById('togglePassword2').addEventListener('click', function() {
+            const passwordInput = document.getElementById('id_password2');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+        
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('input, textarea').forEach(el => {
+                el.classList.remove('error-field');
+            });
+            
+            // Validate username
+            const username = document.getElementById('id_username').value.trim();
+            if (!username) {
+                document.getElementById('username-error').style.display = 'block';
+                document.getElementById('id_username').classList.add('error-field');
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('id_email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                document.getElementById('email-error').style.display = 'block';
+                document.getElementById('id_email').classList.add('error-field');
+                isValid = false;
+            }
+            
+            // Validate password
+            const password1 = document.getElementById('id_password1').value;
+            if (password1.length < 8 || /^\d+$/.test(password1)) {
+                document.getElementById('password1-error').style.display = 'block';
+                document.getElementById('id_password1').classList.add('error-field');
+                isValid = false;
+            }
+            
+            // Validate password confirmation
+            const password2 = document.getElementById('id_password2').value;
+            if (password1 !== password2) {
+                document.getElementById('password2-error').style.display = 'block';
+                document.getElementById('id_password2').classList.add('error-field');
+                isValid = false;
+            }
+            
+            // Validate name
+            const name = document.getElementById('id_name').value.trim();
+            if (!name) {
+                document.getElementById('name-error').style.display = 'block';
+                document.getElementById('id_name').classList.add('error-field');
+                isValid = false;
+            }
+            
+            // Validate address
+            const address = document.getElementById('id_address').value.trim();
+            if (!address) {
+                document.getElementById('address-error').style.display = 'block';
+                document.getElementById('id_address').classList.add('error-field');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

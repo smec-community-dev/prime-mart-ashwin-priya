@@ -1,0 +1,484 @@
+{% extends "seller/base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <!-- Header Section -->
+    <div class="form-header">
+        <div class="header-icon">
+            <i class="fas fa-user-edit"></i>
+        </div>
+        <div class="header-content">
+            <h1>Edit Your Profile</h1>
+            <p>Update your personal and business information</p>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <form method="POST" class="profile-edit-form">
+        {% csrf_token %}
+        
+        <!-- Personal Information Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <i class="fas fa-user-circle"></i>
+                <h3>Personal Information</h3>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        Full Name
+                    </label>
+                    <input type="text" name="name" value="{{ seller.name }}" class="form-input" required>
+                    <div class="input-focus-border"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" name="email" value="{{ request.user.email }}" class="form-input" required>
+                    <div class="input-focus-border"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-phone"></i>
+                        Phone Number
+                    </label>
+                    <div class="phone-input-container">
+                        <span class="phone-prefix">+91</span>
+                        <input type="text" name="phone" value="{{ seller.phone }}" class="form-input phone-input" placeholder="Enter phone number">
+                    </div>
+                    <div class="input-focus-border"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Information Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <i class="fas fa-building"></i>
+                <h3>Business Information</h3>
+            </div>
+            
+            <div class="form-group full-width">
+                <label class="form-label">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Business Address
+                </label>
+                <textarea name="address" class="form-textarea" required>{{ seller.address }}</textarea>
+                <div class="input-focus-border"></div>
+                <div class="char-count" id="addressCharCount">0 characters</div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-save">
+                <i class="fas fa-save"></i>
+                Save Changes
+            </button>
+            <a href="{% url 'manage_profile' %}" class="btn btn-secondary btn-cancel">
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-light: #a5b4fc;
+        --primary-dark: #4338ca;
+        --secondary: #f8fafc;
+        --accent: #8b5cf6;
+        --text: #1e293b;
+        --text-light: #64748b;
+        --muted: #94a3b8;
+        --border: #e2e8f0;
+        --hover-bg: #f1f5f9;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 12px;
+        --radius-sm: 8px;
+        --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+    }
+
+    .edit-profile-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+
+    /* Header Section */
+    .form-header {
+        background: var(--gradient);
+        color: white;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .header-icon {
+        position: relative;
+        z-index: 1;
+        font-size: 48px;
+        opacity: 0.9;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-content h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .header-content p {
+        opacity: 0.9;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    /* Form Sections */
+    .profile-edit-form {
+        padding: 40px;
+    }
+
+    .form-section {
+        margin-bottom: 40px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .section-header i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    .section-header h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 24px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 14px;
+    }
+
+    .form-label i {
+        color: var(--primary);
+        width: 16px;
+    }
+
+    /* Input Styles */
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        background: white;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-input:hover, .form-textarea:hover {
+        border-color: var(--primary-light);
+    }
+
+    .input-focus-border {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--gradient);
+        transition: width 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .form-input:focus ~ .input-focus-border,
+    .form-textarea:focus ~ .input-focus-border {
+        width: 100%;
+    }
+
+    /* Phone Input */
+    .phone-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .phone-prefix {
+        position: absolute;
+        left: 16px;
+        color: var(--text-light);
+        font-weight: 500;
+        z-index: 1;
+    }
+
+    .phone-input {
+        padding-left: 50px;
+    }
+
+    /* Textarea */
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.5;
+    }
+
+    .char-count {
+        text-align: right;
+        font-size: 12px;
+        color: var(--text-light);
+        margin-top: 4px;
+    }
+
+    /* Buttons */
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-save:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-cancel {
+        background: white;
+        color: var(--text);
+        border-color: var(--border);
+    }
+
+    .btn-cancel:hover {
+        background: var(--hover-bg);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .edit-profile-container {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .form-section {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-edit-form {
+            padding: 24px;
+        }
+
+        .form-header {
+            padding: 30px 24px;
+            flex-direction: column;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            font-size: 40px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .edit-profile-container {
+            margin: 0 16px;
+        }
+
+        .profile-edit-form {
+            padding: 20px;
+        }
+
+        .form-header {
+            padding: 24px 20px;
+        }
+    }
+
+    /* Validation States */
+    .form-input:invalid:not(:focus):not(:placeholder-shown) {
+        border-color: var(--error);
+    }
+
+    .form-input:valid:not(:focus):not(:placeholder-shown) {
+        border-color: var(--success);
+    }
+</style>
+
+<script>
+    // Character count for address textarea
+    document.addEventListener('DOMContentLoaded', function() {
+        const addressTextarea = document.querySelector('textarea[name="address"]');
+        const charCount = document.getElementById('addressCharCount');
+        
+        if (addressTextarea && charCount) {
+            // Update character count on input
+            addressTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length} characters`;
+                
+                // Change color based on length
+                if (length > 200) {
+                    charCount.style.color = 'var(--success)';
+                } else if (length > 100) {
+                    charCount.style.color = 'var(--warning)';
+                } else {
+                    charCount.style.color = 'var(--text-light)';
+                }
+            });
+            
+            // Initialize character count
+            addressTextarea.dispatchEvent(new Event('input'));
+        }
+
+        // Add focus animations
+        const inputs = document.querySelectorAll('.form-input, .form-textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+        // Form submission feedback
+        const form = document.querySelector('.profile-edit-form');
+        form.addEventListener('submit', function(e) {
+            const saveBtn = this.querySelector('.btn-save');
+            const originalText = saveBtn.innerHTML;
+            
+            // Show loading state
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+            
+            // In real application, this would be handled by the form submission
+            // For demo, we'll reset after 2 seconds
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}

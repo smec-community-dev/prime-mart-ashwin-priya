@@ -10,7 +10,7 @@
                         </div>
     </div>
     <div class="menu" id="profileMenu">
-        <button onclick="alert('Manage Profile')">Manage Profile</button>
+        <button><a href="{% url 'manage_profile' %}" class="block text-gray-700 hover:bg-red-100 px-4 py-2 rounded-lg">Manage Profile</a></button></button>
         <button><a href="{% url 'seller_logout' %}" class="block text-gray-700 hover:bg-red-100 px-4 py-2 rounded-lg">Logout</a></button></button>
     </div>
 </div>

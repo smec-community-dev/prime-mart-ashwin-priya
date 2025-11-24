@@ -7,6 +7,7 @@ from core.models import Category, User
 class Seller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'role': 'seller'})
     name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=10,null=True)
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
