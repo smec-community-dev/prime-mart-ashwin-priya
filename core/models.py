@@ -15,7 +15,7 @@ class User(AbstractUser):
         ('offline', 'Offline'),
     ]
 
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,default="seller")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
 

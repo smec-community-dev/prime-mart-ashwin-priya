@@ -13,6 +13,7 @@ def seller_register(request):
     if request.method == 'POST':
         user_form = SellerUserForm(request.POST)
         profile_form = SellerProfileForm(request.POST)
+
         if not user_form.is_valid():
             print("User Form Errors:", user_form.errors)
         if not profile_form.is_valid():
@@ -20,12 +21,16 @@ def seller_register(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save(commit=False)
-            user.role = 'seller'  
+            user.role = 'seller'
             user.save()
-            
-            profile = profile_form.save(commit=False)
-            profile.user = user
+
+            # Use get_or_create to avoid UNIQUE constraint errors
+            profile, created = Seller.objects.get_or_create(user=user)
+            profile.name = profile_form.cleaned_data['name']
+
+            profile.address = profile_form.cleaned_data['address']
             profile.save()
+
             return redirect("seller_login")
 
     else:
@@ -43,6 +48,7 @@ def seller_login(request):
         form = SellerLoginForm(request.POST)
 
         if form.is_valid():
+            
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
@@ -67,18 +73,31 @@ def seller_login(request):
     return render(request, "seller/login.html", {"form": form})
 
 
-
 @login_required
 def seller_dashboard(request):
     if request.user.role != "seller":
         return redirect("seller_login")
-    seller = request.user.seller  
-    orders = (Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date'))
+
+    # Safely get seller profile
+    try:
+        seller = request.user.seller
+    except Seller.DoesNotExist:
+        messages.error(request, "You do not have a seller profile. Please register first.")
+        return redirect("seller_register")
+
+    orders = Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date')
     products = Product.objects.filter(seller=seller)
     pending_orders = orders.exclude(status='delivered').count()
     total_revenue = orders.aggregate(total=Sum('total_amount'))['total'] or 0
-    return render(request, "seller/dashboard.html", {"seller": request.user,'total_revenue':total_revenue,'products':products,'pending_orders':pending_orders})
 
+    context = {
+        "seller": seller,
+        'total_revenue': total_revenue,
+        'products': products,
+        'pending_orders': pending_orders
+    }
+
+    return render(request, "seller/dashboard.html", context)
 
 def seller_logout(request):
     logout(request)

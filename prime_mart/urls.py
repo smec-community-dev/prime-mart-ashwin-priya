@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('seller/', include('seller.urls')),
+    path('accounts/', include('allauth.urls')),  # add this for login/logout/social auth
 ]
 
 if settings.DEBUG:
