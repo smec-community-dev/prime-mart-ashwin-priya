@@ -68,7 +68,7 @@ def product_details(request, name):
 
 def add_to_cart(request, product_id):
     if not request.user.is_authenticated:
-        return redirect('login')  
+        return redirect('user_login')  
     customer = request.user.customer   
     product = get_object_or_404(Product, id=product_id)
     cart_item, created = Cart.objects.get_or_create(
@@ -83,7 +83,7 @@ def add_to_cart(request, product_id):
 
 def cart_view(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('user_login')
     customer = request.user.customer
     cart_items = Cart.objects.filter(customer=customer)
     total = sum(item.product.price * item.quantity for item in cart_items)
@@ -103,7 +103,7 @@ def add_to_wishlist(request, product_id):
 
 def wishlist_view(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('user_login')
     customer = request.user.customer
     wishlist_items = Wishlist.objects.filter(customer=customer)
     return render(request, "customer/wishlist.html", {"wishlist_items": wishlist_items})
