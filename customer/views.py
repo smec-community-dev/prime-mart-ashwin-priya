@@ -60,15 +60,17 @@ def customer_logout(request):
     logout(request)    
     return redirect('user_login')
 
-
+@login_required(login_url='user_login')
 def product_details(request, name):
+    if request.user.role != 'customer':
+        return redirect('user_login')
     product = get_object_or_404(Product, name=name)
     return render(request,'customer/product_details.html',{'product': product})
 
-
+@login_required(login_url='user_login')
 def add_to_cart(request, product_id):
-    if not request.user.is_authenticated:
-        return redirect('user_login')  
+    if request.user.role != 'customer':
+        return redirect('user_login')
     customer = request.user.customer   
     product = get_object_or_404(Product, id=product_id)
     cart_item, created = Cart.objects.get_or_create(
@@ -80,18 +82,18 @@ def add_to_cart(request, product_id):
     cart_item.save()
     return redirect('cart_view')
 
-
+@login_required(login_url='user_login') 
 def cart_view(request):
-    if not request.user.is_authenticated:
+    if request.user.role != 'customer':
         return redirect('user_login')
     customer = request.user.customer
     cart_items = Cart.objects.filter(customer=customer)
     total = sum(item.product.price * item.quantity for item in cart_items)
     return render(request,'customer/cart.html',{'cart_items': cart_items,'total': total})
 
-
+@login_required(login_url='user_login') 
 def add_to_wishlist(request, product_id):
-    if not request.user.is_authenticated:
+    if request.user.role != 'customer':
         return redirect('user_login')
     customer = get_object_or_404(Customer, user=request.user)
     product = get_object_or_404(Product, id=product_id)
@@ -100,9 +102,9 @@ def add_to_wishlist(request, product_id):
     Wishlist.objects.create(customer=customer, product=product)
     return redirect('wishlist_view')
 
-
+@login_required(login_url='user_login') 
 def wishlist_view(request):
-    if not request.user.is_authenticated:
+    if request.user.role != 'customer':
         return redirect('user_login')
     customer = request.user.customer
     wishlist_items = Wishlist.objects.filter(customer=customer)
